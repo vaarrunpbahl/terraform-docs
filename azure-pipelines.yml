@@ -4,18 +4,17 @@ trigger:
       - master  # or specify your branch
 
 pool:
-  name: 'self-hosted'  # Replace 'Default' with the name of your self-hosted agent pool
+  vmImage: 'ubuntu-latest'
 
 steps:
-# Step 1: Install Terraform manually (if not already installed on the self-hosted agent)
+# Step 1: Install Terraform (if not already installed on the hosted agent)
 - script: |
     curl -sL https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_linux_amd64.zip -o terraform.zip
-    sudo apt-get install unzip
+    sudo apt-get install unzip -y
     unzip terraform.zip
     sudo mv terraform /usr/local/bin/
     terraform -v  # Verify installation
   displayName: 'Install Terraform'
-  condition: not(succeeded())  # Only runs if Terraform isn't already installed
 
 # Step 2: Initialize Terraform
 - script: |
