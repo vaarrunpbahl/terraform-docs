@@ -7,23 +7,31 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: UseTerraform@0
-  inputs:
-    terraformVersion: 'latest'
+# Step 1: Install Terraform manually
+- script: |
+    curl -sL https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_linux_amd64.zip -o terraform.zip
+    sudo apt-get install unzip
+    unzip terraform.zip
+    sudo mv terraform /usr/local/bin/
+    terraform -v  # Verify installation
+  displayName: 'Install Terraform'
 
+# Step 2: Initialize Terraform
 - script: |
     terraform init
   displayName: 'Initialize Terraform'
 
+# Step 3: Validate Terraform configuration
 - script: |
     terraform validate
   displayName: 'Validate Terraform'
 
+# Step 4: Plan Terraform deployment
 - script: |
     terraform plan -out=tfplan
   displayName: 'Terraform Plan'
 
+# Step 5: Apply Terraform deployment
 - script: |
     terraform apply -auto-approve tfplan
   displayName: 'Terraform Apply'
-
