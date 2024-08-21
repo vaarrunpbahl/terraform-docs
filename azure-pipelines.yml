@@ -1,13 +1,12 @@
 trigger:
   branches:
     include:
-      - master  # or specify your branch
+      - master  # or your specific branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'Default'  # Replace with your self-hosted pool name
 
 steps:
-# Step 1: Install Terraform (if not already installed on the hosted agent)
 - script: |
     curl -sL https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_linux_amd64.zip -o terraform.zip
     sudo apt-get install unzip -y
@@ -16,22 +15,18 @@ steps:
     terraform -v  # Verify installation
   displayName: 'Install Terraform'
 
-# Step 2: Initialize Terraform
 - script: |
     terraform init
   displayName: 'Initialize Terraform'
 
-# Step 3: Validate Terraform configuration
 - script: |
     terraform validate
   displayName: 'Validate Terraform'
 
-# Step 4: Plan Terraform deployment
 - script: |
     terraform plan -out=tfplan
   displayName: 'Terraform Plan'
 
-# Step 5: Apply Terraform deployment
 - script: |
     terraform apply -auto-approve tfplan
   displayName: 'Terraform Apply'
