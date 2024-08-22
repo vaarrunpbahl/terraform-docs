@@ -1,32 +1,49 @@
 trigger:
   branches:
     include:
-      - master  # or your specific branch
+      - master  # or specify your branch
 
 pool:
-  name: 'Default'  # Replace with your self-hosted pool name
+  name: 'Default'  # Replace with your self-hosted agent pool name
 
 steps:
+# Step 1: Install Terraform (if not already installed on the agent)
 - script: |
-    curl -sL https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_linux_amd64.zip -o terraform.zip
-    sudo apt-get install unzip -y
-    unzip terraform.zip
-    sudo mv terraform /usr/local/bin/
+    curl -o terraform.zip https://releases.hashicorp.com/terraform/1.5.2/terraform_1.5.2_windows_amd64.zip
+    unzip terraform.zip -d C:\terraform
+    move C:\terraform\terraform.exe C:\Windows\System32\terraform.exe
     terraform -v  # Verify installation
   displayName: 'Install Terraform'
 
+# Step 2: Install terraform-docs
+- script: |
+    curl -o terraform-docs.zip https://github.com/terraform-docs/terraform-docs/releases/download/v0.16.0/terraform-docs-v0.16.0-windows-amd64.zip
+    unzip terraform-docs.zip -d C:\terraform-docs
+    move C:\terraform-docs\terraform-docs.exe C:\Windows\System32\terraform-docs.exe
+    terraform-docs -v  # Verify installation
+  displayName: 'Install terraform-docs'
+
+# Step 3: Initialize Terraform
 - script: |
     terraform init
   displayName: 'Initialize Terraform'
 
+# Step 4: Validate Terraform configuration
 - script: |
     terraform validate
   displayName: 'Validate Terraform'
 
+# Step 5: Plan Terraform deployment
 - script: |
     terraform plan -out=tfplan
   displayName: 'Terraform Plan'
 
+# Step 6: Apply Terraform deployment
 - script: |
     terraform apply -auto-approve tfplan
   displayName: 'Terraform Apply'
+
+# Step 7: Generate Terraform documentation using terraform-docs
+- script: |
+    terraform-docs markdown table . > README.md
+  displayName: 'Generate Terraform Docs'
